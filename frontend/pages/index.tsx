@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import UploadSection from "../components/UploadSection"; // pastikan path sesuai
 
-const dummyResultUrl = "/sample-result.mp4"; // Ganti ini nanti ke URL backend
+const dummyResultUrl = "/sample-result.mp4"; // Ganti nanti ke URL backend
 
 export default function Home() {
   const [videoFile, setVideoFile] = useState<File | null>(null);
@@ -8,18 +9,9 @@ export default function Home() {
   const [processing, setProcessing] = useState(false);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setVideoFile(e.target.files[0]);
-      setVideoUrl(URL.createObjectURL(e.target.files[0]));
-      setResultUrl(null);
-    }
-  };
-
   const handleProcess = async () => {
     if (!videoFile) return;
     setProcessing(true);
-    // Simulasi proses, nanti ganti POST ke backend/Replicate API
     setTimeout(() => {
       setResultUrl(dummyResultUrl);
       setProcessing(false);
@@ -38,25 +30,17 @@ export default function Home() {
           <span className="block text-sm text-blue-500 mt-2">1st minute free!</span>
         </p>
       </div>
+
       {/* Upload */}
       <div className="w-full max-w-md bg-white p-6 rounded-2xl shadow-xl flex flex-col gap-4">
-        <input
-          type="file"
-          accept="video/mp4"
-          onChange={handleFileChange}
-          className="mb-2"
+        <UploadSection
+          onFileChange={(file) => {
+            setVideoFile(file);
+            setVideoUrl(URL.createObjectURL(file));
+            setResultUrl(null);
+          }}
+          videoUrl={videoUrl}
         />
-        {videoUrl && (
-          <div className="mb-4">
-            <label className="text-sm text-gray-600 font-medium">Preview:</label>
-            <video
-              src={videoUrl}
-              controls
-              className="mt-2 w-full rounded-xl border"
-              style={{ maxHeight: 280 }}
-            />
-          </div>
-        )}
 
         <button
           onClick={handleProcess}
