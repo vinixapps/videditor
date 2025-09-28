@@ -1,1 +1,30 @@
+{
+  "name": "video-remover-backend",
+  "version": "1.0.0",
+  "description": "Backend for Video Subtitle/Watermark Remover App",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "cookie-parser": "^1.4.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.3"
+  },
+  "keywords": [
+    "video",
+    "subtitle",
+    "remover",
+    "backend",
+    "express"
+  ],
+  "author": "Andhy Shera",
+  "license": "MIT"
+}
 
