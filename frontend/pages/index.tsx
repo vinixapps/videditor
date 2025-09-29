@@ -4,6 +4,7 @@ import LoginGoogleButton from "../components/LoginGoogleButton";
 import CheckoutModal from "../components/CheckoutModal";
 import ProcessingStatus from "../components/ProcessingStatus";
 import UploadSection from "../components/UploadSection";
+import styles from "../styles/Home.module.css";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -125,63 +126,33 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-2 py-8">
-      {/* Logo/Title */}
-      <div className="mb-6 text-center flex flex-col items-center">
-        <div className="w-20 h-20 flex items-center justify-center mb-2">
-          <img
-            src="/logo.png"
-            alt="Logo"
-            className="object-contain w-full h-full"
-            style={{ maxWidth: 80, maxHeight: 80 }}
-            draggable={false}
-          />
-        </div>
-        <h1 className="text-3xl font-bold mb-2 text-blue-700">
-          Video Subtitle/Watermark Remover
-        </h1>
-        <p className="text-gray-600 max-w-md mx-auto">
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <img src="/logo.png" alt="Logo" className={styles.logo} />
+        <h1 className={styles.title}>Video Subtitle/Watermark Remover</h1>
+        <p className={styles.subtitle}>
           Remove subtitles or watermarks from your videos automatically with AI.
-          <span className="block text-sm text-blue-500 mt-2">
-            First minute free!
-          </span>
+          <span className={styles.highlight}>First minute free!</span>
         </p>
       </div>
 
-      {/* Credit Info + Login/Logout */}
-      <div className="w-full max-w-md flex flex-col gap-2 items-center mb-3">
+      <div className={styles.userSection}>
         <CreditInfo credits={userCredit} isLoading={isLoadingUser} />
         {user ? (
-          <div className="flex items-center gap-2">
-            <img
-              src={user.avatar || "/logo.png"}
-              alt="avatar"
-              className="w-8 h-8 rounded-full border object-cover"
-              style={{ maxWidth: 32, maxHeight: 32 }}
-            />
-            <span className="text-sm">{user.name || user.email}</span>
-            <button
-              onClick={handleLogout}
-              className="text-xs px-3 py-1 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-600 ml-2"
-            >
-              Logout
-            </button>
+          <div className={styles.userInfo}>
+            <img src={user.avatar || "/logo.png"} alt="avatar" className={styles.avatar} />
+            <span className={styles.userName}>{user.name || user.email}</span>
+            <button onClick={handleLogout} className={styles.logout}>Logout</button>
           </div>
         ) : (
           <LoginGoogleButton onClick={handleLogin} isLoading={isLoadingUser} />
         )}
       </div>
 
-      {/* Top Up Button */}
-      <button
-        className="mb-4 bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-xl"
-        onClick={() => setShowCheckout(true)}
-        disabled={!user}
-      >
+      <button className={styles.topup} onClick={() => setShowCheckout(true)} disabled={!user}>
         Top Up / Buy Credit
       </button>
 
-      {/* Checkout Modal */}
       <CheckoutModal
         open={showCheckout}
         onClose={() => setShowCheckout(false)}
@@ -189,52 +160,28 @@ export default function Home() {
         isProcessing={paymentProcessing}
       />
 
-      {/* Upload & Process */}
-      <div className="w-full max-w-md bg-white p-6 rounded-2xl shadow-xl flex flex-col gap-4">
-        <UploadSection
-          onFileChange={handleFileChange}
-          videoUrl={videoUrl}
-          disabled={processing || !user}
-        />
+      <div className={styles.card}>
+        <UploadSection onFileChange={handleFileChange} videoUrl={videoUrl} disabled={processing || !user} />
 
-        <ProcessingStatus
-          show={processing}
-          text="Processing your video..."
-        />
+        <ProcessingStatus show={processing} text="Processing your video..." />
 
         <button
           onClick={handleProcess}
           disabled={!videoFile || processing || !user || userCredit <= 0}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-xl transition disabled:opacity-50"
+          className={styles.processButton}
         >
-          {processing
-            ? "Processing..."
-            : userCredit <= 0
-            ? "Out of credit"
-            : "Remove Subtitle/Watermark"}
+          {processing ? "Processing..." : userCredit <= 0 ? "Out of credit" : "Remove Subtitle/Watermark"}
         </button>
 
-        {/* Result */}
         {resultUrl && (
-          <div className="mt-4">
-            <label className="text-sm text-gray-600 font-medium">Result:</label>
-            <video
-              src={resultUrl}
-              controls
-              className="mt-2 w-full rounded-xl border"
-              style={{ maxHeight: 280 }}
-            />
-            <a
-              href={resultUrl}
-              download
-              className="block mt-2 text-center bg-green-600 hover:bg-green-700 text-white rounded-xl py-2 font-semibold"
-            >
-              Download Result
-            </a>
+          <div className={styles.resultBox}>
+            <label className={styles.resultLabel}>Result:</label>
+            <video src={resultUrl} controls className={styles.resultVideo} />
+            <a href={resultUrl} download className={styles.downloadButton}>Download Result</a>
           </div>
         )}
       </div>
-      <footer className="mt-10 text-gray-400 text-xs text-center">
+      <footer className={styles.footer}>
         &copy; {new Date().getFullYear()} Video Subtitle Remover. Powered by AI.
       </footer>
     </div>
