@@ -5,7 +5,7 @@ import CheckoutModal from "../components/CheckoutModal";
 import ProcessingStatus from "../components/ProcessingStatus";
 import UploadSection from "../components/UploadSection";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"; // atur sesuai deploy
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export default function Home() {
   const [user, setUser] = useState<any>(null);
@@ -35,7 +35,7 @@ export default function Home() {
 
   const handleLogin = async () => {
     setIsLoadingUser(true);
-    const email = prompt("Masukkan email Google Anda (dummy)");
+    const email = prompt("Enter your Google email (dummy)");
     if (!email) {
       setIsLoadingUser(false);
       return;
@@ -65,7 +65,7 @@ export default function Home() {
   const handleProcess = async () => {
     if (!videoFile) return;
     if (userCredit <= 0) {
-      alert("Credit kamu habis. Silakan top up dulu!");
+      alert("You don't have enough credit. Please top up first!");
       return;
     }
     setProcessing(true);
@@ -83,10 +83,10 @@ export default function Home() {
         setResultUrl(data.resultUrl.startsWith("http") ? data.resultUrl : `${BACKEND_URL}${data.resultUrl}`);
         setUserCredit((c) => c - 1);
       } else {
-        alert("Gagal proses video: " + (data.error || "Unknown error"));
+        alert("Failed to process video: " + (data.error || "Unknown error"));
       }
     } catch (err: any) {
-      alert("Error saat proses video: " + err.message);
+      alert("Error while processing video: " + err.message);
     }
     setProcessing(false);
   };
@@ -108,7 +108,7 @@ export default function Home() {
       setUserCredit((c) => c + amount);
       setShowCheckout(false);
       setPaymentProcessing(false);
-      alert(`Top up ${amount} credit berhasil!`);
+      alert(`Top up ${amount} credits successful!`);
     }, 1800);
   };
 
@@ -128,7 +128,6 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-2 py-8">
       {/* Logo/Title */}
       <div className="mb-6 text-center flex flex-col items-center">
-        {/* Kecilkan logo supaya nggak terlalu besar */}
         <div className="w-20 h-20 flex items-center justify-center mb-2">
           <img
             src="/logo.png"
@@ -142,14 +141,14 @@ export default function Home() {
           Video Subtitle/Watermark Remover
         </h1>
         <p className="text-gray-600 max-w-md mx-auto">
-          Remove subtitles or watermark from your video automatically with AI.
+          Remove subtitles or watermarks from your videos automatically with AI.
           <span className="block text-sm text-blue-500 mt-2">
-            1st minute free!
+            First minute free!
           </span>
         </p>
       </div>
 
-      {/* Info Credit + Login/Logout */}
+      {/* Credit Info + Login/Logout */}
       <div className="w-full max-w-md flex flex-col gap-2 items-center mb-3">
         <CreditInfo credits={userCredit} isLoading={isLoadingUser} />
         {user ? (
@@ -173,7 +172,7 @@ export default function Home() {
         )}
       </div>
 
-      {/* Tombol Top Up */}
+      {/* Top Up Button */}
       <button
         className="mb-4 bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-xl"
         onClick={() => setShowCheckout(true)}
@@ -182,7 +181,7 @@ export default function Home() {
         Top Up / Buy Credit
       </button>
 
-      {/* Modal Checkout */}
+      {/* Checkout Modal */}
       <CheckoutModal
         open={showCheckout}
         onClose={() => setShowCheckout(false)}
@@ -200,7 +199,7 @@ export default function Home() {
 
         <ProcessingStatus
           show={processing}
-          text="Sedang memproses video kamu..."
+          text="Processing your video..."
         />
 
         <button
@@ -211,11 +210,11 @@ export default function Home() {
           {processing
             ? "Processing..."
             : userCredit <= 0
-            ? "Credit habis"
+            ? "Out of credit"
             : "Remove Subtitle/Watermark"}
         </button>
 
-        {/* Hasil */}
+        {/* Result */}
         {resultUrl && (
           <div className="mt-4">
             <label className="text-sm text-gray-600 font-medium">Result:</label>
