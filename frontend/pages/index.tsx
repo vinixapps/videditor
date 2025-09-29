@@ -8,7 +8,7 @@ import UploadSection from "../components/UploadSection";
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"; // atur sesuai deploy
 
 export default function Home() {
-  const [user, setUser] = useState<any>(null); // nanti bisa {email, name, avatar, credit}
+  const [user, setUser] = useState<any>(null);
   const [userCredit, setUserCredit] = useState<number>(0);
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
@@ -18,9 +18,7 @@ export default function Home() {
   const [paymentProcessing, setPaymentProcessing] = useState(false);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
 
-  // --- User Auth / Session ---
   useEffect(() => {
-    // Auto check session user
     fetch(`${BACKEND_URL}/auth/me`, { credentials: "include" })
       .then(async (res) => {
         if (!res.ok) throw new Error("Not logged in");
@@ -36,9 +34,7 @@ export default function Home() {
   }, []);
 
   const handleLogin = async () => {
-    // Dummy Google login
     setIsLoadingUser(true);
-    // Simulasi login, ganti ke real login kalau sudah siap
     const email = prompt("Masukkan email Google Anda (dummy)");
     if (!email) {
       setIsLoadingUser(false);
@@ -60,14 +56,12 @@ export default function Home() {
     setIsLoadingUser(false);
   };
 
-  // --- Handle Upload ---
   const handleFileChange = (file: File) => {
     setVideoFile(file);
     setVideoUrl(URL.createObjectURL(file));
     setResultUrl(null);
   };
 
-  // --- Proses Video ke Backend ---
   const handleProcess = async () => {
     if (!videoFile) return;
     if (userCredit <= 0) {
@@ -76,11 +70,9 @@ export default function Home() {
     }
     setProcessing(true);
     setResultUrl(null);
-    // Kirim file ke backend
     const formData = new FormData();
     formData.append("video", videoFile);
     formData.append("userId", user?.email || "guest");
-
     try {
       const res = await fetch(`${BACKEND_URL}/videoProcess/remove`, {
         method: "POST",
@@ -89,7 +81,6 @@ export default function Home() {
       const data = await res.json();
       if (data.success && data.resultUrl) {
         setResultUrl(data.resultUrl.startsWith("http") ? data.resultUrl : `${BACKEND_URL}${data.resultUrl}`);
-        // Kurangi credit (simulasi, nanti lebih baik get ulang dari backend)
         setUserCredit((c) => c - 1);
       } else {
         alert("Gagal proses video: " + (data.error || "Unknown error"));
@@ -100,12 +91,9 @@ export default function Home() {
     setProcessing(false);
   };
 
-  // --- Handle Top Up Credit ---
   const handleCheckout = async (amount: number) => {
     setPaymentProcessing(true);
-    // Dummy top up (production: integrate ke payment gateway)
     setTimeout(async () => {
-      // Simulasi top up credit user di backend
       const userId = user?.email || "guest";
       await fetch(`${BACKEND_URL}/payment/webhook`, {
         method: "POST",
@@ -124,7 +112,6 @@ export default function Home() {
     }, 1800);
   };
 
-  // --- Logout (optional) ---
   const handleLogout = async () => {
     await fetch(`${BACKEND_URL}/auth/logout`, {
       method: "POST",
@@ -140,14 +127,25 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-2 py-8">
       {/* Logo/Title */}
-      <div className="mb-6 text-center">
-        <img src="/logo.png" alt="Logo" className="mx-auto w-14 mb-2" />
+      <div className="mb-6 text-center flex flex-col items-center">
+        {/* Kecilkan logo supaya nggak terlalu besar */}
+        <div className="w-20 h-20 flex items-center justify-center mb-2">
+          <img
+            src="/logo.png"
+            alt="Logo"
+            className="object-contain w-full h-full"
+            style={{ maxWidth: 80, maxHeight: 80 }}
+            draggable={false}
+          />
+        </div>
         <h1 className="text-3xl font-bold mb-2 text-blue-700">
           Video Subtitle/Watermark Remover
         </h1>
         <p className="text-gray-600 max-w-md mx-auto">
-          Remove subtitles or watermark from your video automatically with AI.  
-          <span className="block text-sm text-blue-500 mt-2">1st minute free!</span>
+          Remove subtitles or watermark from your video automatically with AI.
+          <span className="block text-sm text-blue-500 mt-2">
+            1st minute free!
+          </span>
         </p>
       </div>
 
@@ -159,7 +157,8 @@ export default function Home() {
             <img
               src={user.avatar || "/logo.png"}
               alt="avatar"
-              className="w-7 h-7 rounded-full border"
+              className="w-8 h-8 rounded-full border object-cover"
+              style={{ maxWidth: 32, maxHeight: 32 }}
             />
             <span className="text-sm">{user.name || user.email}</span>
             <button
@@ -199,7 +198,10 @@ export default function Home() {
           disabled={processing || !user}
         />
 
-        <ProcessingStatus show={processing} text="Sedang memproses video kamu..." />
+        <ProcessingStatus
+          show={processing}
+          text="Sedang memproses video kamu..."
+        />
 
         <button
           onClick={handleProcess}
